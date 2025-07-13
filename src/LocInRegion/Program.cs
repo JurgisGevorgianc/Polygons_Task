@@ -8,39 +8,23 @@ using System.Globalization;
 namespace LocInRegion
 {
     class Program
-    {         
+    {
+        private static string RegionData = "regions.json";
+        private static string LocationData = "locations.json";
+        private static string FolderName = "Data";
+        private static string Results = "output.json";
+
         private static string precision = "G17";
         static void Main(string[] args)
         {
-            string RegionData = "regions.json";
-            string LocationData = "locations.json";
-            string FolderName = "Data";
-            string Results = "output.json";
 
             if (File.Exists(Results))
             {
                 File.Delete(Results);
             }
 
-            foreach (var a in args)
-            {
-                if (a.StartsWith("--regions="))
-                {
-                    RegionData = a["--regions=".Length..];
-                }
-                else if (a.StartsWith("--locations="))
-                {
-                    LocationData = a["--locations=".Length..];
-                }
-                else if (a.StartsWith("--output="))
-                {
-                    Results = a["--output=".Length..];
-                }
-            }
-
-            var cwd = Directory.GetCurrentDirectory();
-            var regionsPath = Path.Combine(cwd, FolderName, RegionData);
-            var locationsPath = Path.Combine(cwd, FolderName, LocationData);
+            var regionsPath = Path.Combine(AppContext.BaseDirectory, FolderName, RegionData);
+            var locationsPath = Path.Combine(AppContext.BaseDirectory, FolderName, LocationData);
 
             List<Region> regions = IOUtils.ReadRegion(regionsPath);
             List<Location> locations = IOUtils.ReadLocation(locationsPath);
