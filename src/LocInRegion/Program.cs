@@ -39,8 +39,8 @@ namespace LocInRegion
             }
 
             var cwd = Directory.GetCurrentDirectory();
-            var regionsPath = Path.Combine(cwd, "Data", RegionData);
-            var locationsPath = Path.Combine(cwd, "Data", LocationData);
+            var regionsPath = Path.Combine(cwd, FolderName, RegionData);
+            var locationsPath = Path.Combine(cwd, FolderName, LocationData);
 
             List<Region> regions = IOUtils.ReadRegion(regionsPath);
             List<Location> locations = IOUtils.ReadLocation(locationsPath);
