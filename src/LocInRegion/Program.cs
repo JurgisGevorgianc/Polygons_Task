@@ -8,19 +8,34 @@ using System.Globalization;
 namespace LocInRegion
 {
     class Program
-    {
-        private static string RegionData = "regions.json";
-        private static string LocationData = "locations.json";
-        private static string FolderName = "Data";
-        private static string Results = "output.json";
-         
+    {         
         private static string precision = "G17";
-
         static void Main(string[] args)
         {
+            string RegionData = "regions.json";
+            string LocationData = "locations.json";
+            string FolderName = "Data";
+            string Results = "output.json";
+
             if (File.Exists(Results))
             {
                 File.Delete(Results);
+            }
+
+            foreach (var a in args)
+            {
+                if (a.StartsWith("--regions="))
+                {
+                    RegionData = a["--regions=".Length..];
+                }
+                else if (a.StartsWith("--locations="))
+                {
+                    LocationData = a["--locations=".Length..];
+                }
+                else if (a.StartsWith("--output="))
+                {
+                    Results = a["--output=".Length..];
+                }
             }
 
             var regionsPath = Path.Combine(AppContext.BaseDirectory, FolderName, RegionData);
@@ -36,8 +51,10 @@ namespace LocInRegion
             DisplayLocation(locations);
 
             // Writing to json
-            List<RegionAndLocations> RL = TaskUtils.CreateRL(regions, locations);
-            IOUtils.WriteJSON(Results, RL);
+            List<RegionAndLocations> regionsAndLocations = TaskUtils.CreateRL(regions, locations);
+            DisplayRegionAndLocations(regionsAndLocations);
+
+            IOUtils.WriteJSON(Results, regionsAndLocations);
         }
 
         /// <summary>
@@ -85,6 +102,28 @@ namespace LocInRegion
                 var latitude = location.Coordinates[1].ToString(precision, CultureInfo.InvariantCulture);
 
                 Console.WriteLine("{0}: (Longitude is {1}, Latitude is {2})", location.Name, longitude, latitude);
+            }
+
+            Console.WriteLine();
+        }
+
+        /// <summary>
+        /// Displays list of RegionAndLocations objects and its information to the console.
+        /// </summary>
+        /// <param name="regionsAndLocations">list of RegionAndLocations objects</param>
+        public static void DisplayRegionAndLocations(List<RegionAndLocations> regionsAndLocations)
+        {
+
+            foreach (var regionAndLocations in regionsAndLocations)
+            {
+                Console.WriteLine("{0} has these locations:", regionAndLocations.Region);
+                List<string> locations = regionAndLocations.MatchedLocations;
+
+                foreach(var location in locations)
+                {
+                    Console.WriteLine("{0}", location);
+                }
+                Console.WriteLine();
             }
         }
     }
